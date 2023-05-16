@@ -1,0 +1,16 @@
+<!-- home/templates/home/frontpage.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Welcome to My Website</h1>
+  
+  <!-- <p>
+    <a href="{% url 'signup' %}" class="btn btn-primary">Sign Up</a>
+    <a href="{% url 'login' %}" class="btn btn-secondary">Login</a>
+  </p> -->
+  {% if redirected_from_dispense %}
+    <script>
+      alert("You were redirected from the dispense page.");
+    </script>
+  {% endif %}
+{% endblock %}

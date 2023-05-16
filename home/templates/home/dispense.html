@@ -1,0 +1,58 @@
+
+    
+  {% extends 'base.html' %}
+
+  {% block content %}
+    <h1 style="text-align: center;">Dispense Page</h1>
+    <!-- <button class="custom-button" id="dispense">Dispense</button> -->
+    {% if messages %}
+      <h3 style="text-align: center;">Dispensing In Progress</h3>
+      <h4>Alert!</h4>
+      <ul class="messages">
+        {% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      <div style=" display:flex; justify-content: center; align-items: center; flex-direction: column;">
+          <!-- New fields -->
+          <div>
+            <label for="{{ form.pregnancy.id_for_label }}">Pregnancy:</label>
+            {{ form.pregnancy }}
+          </div>
+          <!-- <div>
+            <label for="{{ form.condition.id_for_label }}">Condition:</label>
+            {{ form.condition }}
+          </div> -->
+          <div>
+            <label for="{{ form.alcohol.id_for_label }}">Alcohol:</label>
+            {{ form.alcohol }}
+          </div>
+          <div>
+            <label for="{{ form.recommendation.id_for_label }}">Recommendation:</label>
+            {{ form.recommendation}}
+          </div>
+
+          <!-- Existing buttons -->
+          <button class="btn btn-primary custom-button" style="margin: 20px 10px; padding: 10px 20px;" type="submit" name="dispenserA" value="dispenserA">Dispenser A</button>
+          <button class="btn btn-primary custom-button" style="margin: 20px 10px; padding: 10px 20px;" type="submit" name="button" value="dispenserB">Dispenser B</button>
+          <button class="btn btn-primary custom-button" style="margin: 20px 10px; padding: 10px 20px;" type="submit" name="button" value="dispenserC">Dispenser C</button>
+      </div>  
+    </form>
+    <script>
+      document.getElementById('dispense').addEventListener('click', function() {
+          // Fetch the message from the server
+          fetch('/dispense_message/')
+              .then(response => response.text())
+              .then(message => {
+                  // Display the message box with the actual message
+                  var messageBox = document.getElementById('message');
+                  messageBox.textContent = message;
+                  messageBox.style.display = 'block';
+              });
+      });
+      </script>
+  {% endblock %}
