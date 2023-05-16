@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://yourbackgroundimage.com');
+            background-size: cover;
+            color: white;
+        }
+        .navbar {
+            background-color: rgba(0,0,0,0.7) !important;
+        }
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+        .container {
+            background-color: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .custom-button {
+            font-size: 1.5rem;
+            padding: 15px 30px;
+            color: #9a9a9add;
+            background-color: #55555500;
+            border: none;
+            border-radius: 5px;
+            margin: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .custom-button:hover {
+            background-color: #000000;
+        }
+    </style>
+    <title>{% block title %}My Django Site{% endblock %}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{% url 'home' %}">My Django Site</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">Home</a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dispense' %}">Dispense</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'signup' %}">Signup</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Login</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
