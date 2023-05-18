@@ -5,16 +5,20 @@
   {% block content %}
     <h1 style="text-align: center;">Dispense Page</h1>
     <!-- <button class="custom-button" id="dispense">Dispense</button> -->
+    
     {% if messages %}
       <h3 style="text-align: center;">Dispensing In Progress</h3>
       <h4>Alert!</h4>
+      <!-- {%if message != null%}
+        <h3>{{message}}</h3>
+      {%endif%} -->
       <ul class="messages">
         {% for message in messages %}
           <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
         {% endfor %}
       </ul>
     {% endif %}
-
+    
     <form method="post">
       {% csrf_token %}
       <div style=" display:flex; justify-content: center; align-items: center; flex-direction: column;">
@@ -23,13 +27,13 @@
             <label for="{{ form.pregnancy.id_for_label }}">Pregnancy:</label>
             {{ form.pregnancy }}
           </div>
-          <!-- <div>
-            <label for="{{ form.condition.id_for_label }}">Condition:</label>
-            {{ form.condition }}
-          </div> -->
           <div>
             <label for="{{ form.alcohol.id_for_label }}">Alcohol:</label>
             {{ form.alcohol }}
+          </div>
+          <div>
+            <label for="{{ form.quantity.id_for_label }}">Quantity of blisters:</label>
+            {{ form.quantity }}
           </div>
           <div>
             <label for="{{ form.recommendation.id_for_label }}">Recommendation:</label>
@@ -37,9 +41,9 @@
           </div>
 
           <!-- Existing buttons -->
-          <button class="btn btn-primary custom-button" style="margin: 20px 10px; padding: 10px 20px;" type="submit" name="dispenserA" value="dispenserA">Dispenser A</button>
-          <button class="btn btn-primary custom-button" style="margin: 20px 10px; padding: 10px 20px;" type="submit" name="button" value="dispenserB">Dispenser B</button>
-          <button class="btn btn-primary custom-button" style="margin: 20px 10px; padding: 10px 20px;" type="submit" name="button" value="dispenserC">Dispenser C</button>
+          <button class="btn btn-primary custom-button" style="margin: 20px 10px; padding: 10px 20px;" type="submit" name="button" value="dispenserA">Dispenser A<br> Name: {{dispenser1_name}}<br> Quantitiy/Blister: {{dispenser1_quantity}}</button>
+          <button class="btn btn-primary custom-button" style="margin: 20px 10px; padding: 10px 20px;" type="submit" name="button" value="dispenserB">Dispenser B <br>Name: {{dispenser2_name}}<br> Quantitiy/Blister: {{dispenser2_quantity}}</button>
+          <button class="btn btn-primary custom-button" style="margin: 20px 10px; padding: 10px 20px;" type="submit" name="button" value="dispenserC">Dispenser C <br>Name: {{dispenser3_name}}<br> Quantitiy/Blister: {{dispenser3_quantity}}</button>
       </div>  
     </form>
     <script>

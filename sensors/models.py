@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
 
+
+
 # Create your models here.
 class HumiditySensor(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -36,10 +38,12 @@ class MedicalDispensor(models.Model):
         app_label = 'sensors'
 
 class DispenseRecord(models.Model):
-    created_at = models.DateTimeField(default=timezone.now,primary_key=True)
+    created_at = models.DateTimeField(default=timezone.now)
     dispId = models.IntegerField(default=1)
     medicine = models.CharField(max_length=100)
     quantity = models.IntegerField(default=0)
+    pillQuantity = models.IntegerField(default=0)
+
 
     class Meta:
         app_label = 'sensors'

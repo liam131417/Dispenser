@@ -7,6 +7,7 @@ class DispenseForm(forms.Form):
     #condition = forms.ModelChoiceField(queryset=(med deet).objects.all())
     alcohol = forms.BooleanField(required=False)
     recommendation = forms.BooleanField(required=False)
+    quantity = forms.IntegerField(label='quantity', required=True)
     dispenser_A = forms.BooleanField(label='Dispenser A', required=False)
     dispenser_B = forms.BooleanField(label='Dispenser B', required=False)
     dispenser_C = forms.BooleanField(label='Dispenser C', required=False)

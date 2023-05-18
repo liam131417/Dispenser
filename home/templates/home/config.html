@@ -13,28 +13,38 @@
           <div>
             <label for="{{ form.medicineA.id_for_label }}">Medicine A:</label>
             {{ form.medicineA }}
-            <label for="{{ form.quantityA.id_for_label }}">Quantity:</label>
+            <label for="{{ form.quantityA.id_for_label }}">Quantity/Blilster:</label>
             {{ form.quantityA }}
           </div>
           <h3 style="text-align: center;">Dispenser B</h3>
           <div>
             <label for="{{ form.medicineB.id_for_label }}">Medicine B:</label>
             {{ form.medicineB }}
-            <label for="{{ form.quantityB.id_for_label }}">Quantity:</label>
+            <label for="{{ form.quantityB.id_for_label }}">Quantity/Blilster:</label>
             {{ form.quantityB }}
           </div>
           <h3 style="text-align: center;">Dispenser C</h3>
           <div>
             <label for="{{ form.medicineC.id_for_label }}">Medicine C:</label>
             {{ form.medicineC }}
-            <label for="{{ form.quantityC.id_for_label }}">Quantity:</label>
+            <label for="{{ form.quantityC.id_for_label }}">Quantity/Blilster:</label>
             {{ form.quantityC }}
           </div>
 
           <!-- Existing buttons -->
           <button class="btn btn-primary custom-button" style="margin: 20px 10px; padding: 10px 20px;" type="submit" name="Set" value="Set">Set</button>
+
+          
       </div>  
+      <button type="button" onclick="displayObjects()">List of Medicines</button>
     </form>
+
+    <script>
+        function displayObjects() {
+            // Open a new window or modal dialog
+            var newWindow = window.open('/config/displayMed/', '_blank', 'height=500,width=800');
+        }
+    </script>
 
     {% if message %}
         <p>{{ message }}</p>

@@ -4,13 +4,17 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import HumiditySensor
 from .models import MotionSensor
 from .models import UltrasonicSensor
-from .models import MedicalDispensor
+from .models import MedicalDispensor,DispenseRecord
 import json
 
 from django.utils import timezone
-from datetime import timedelta
+from datetime import datetime, timedelta, date
 import random
+from django.db.models import Count
+from django.db.models.functions import TruncMonth,TruncWeek
 
+
+from sensors.models import DispenseRecord
 
 
 @csrf_exempt
@@ -295,3 +299,78 @@ def getSeed(request):
                 created_at = y
             )
     return JsonResponse({'success':'success'})
+
+@csrf_exempt   
+def seed_data(request):
+    today = timezone.now().date()
+    start_date = today - timedelta(days=365)
+
+    dispId_choices = [1, 2, 3]
+    medicine_choices = ['paracetamol', 'aspirin', 'ibuprofen']
+
+    for day in range((today - start_date).days):
+        date = start_date + timedelta(days=day)
+
+        # Generate a random number of entries for the day
+        num_entries = random.randint(5, 15)
+
+        for _ in range(num_entries):
+            # Randomly select dispId, medicine, quantity, and set pillQuantity to 10
+            dispId = random.choice(dispId_choices)
+            medicine = random.choice(medicine_choices)
+            quantity = random.randint(1, 5)
+            pillQuantity = 10
+
+            # Create the DispenseRecord entry
+            DispenseRecord.objects.create(
+                created_at=date,
+                dispId=dispId,
+                medicine=medicine,
+                quantity=quantity,
+                pillQuantity=pillQuantity
+            )
+
+    return JsonResponse({'message': 'Data seeded successfully.'})
+
+def entries_by_month():
+    entries = DispenseRecord.objects\
+        .annotate(month=TruncMonth('created_at'))\
+        .values('month')\
+        .annotate(count=Count('id'))\
+        .order_by('month')
+    
+    monthly_counts = [0] * 12
+    
+    for entry in entries:
+        month = entry['month'].month
+        count = entry['count']
+        monthly_counts[month - 1] = count
+    
+    return monthly_counts
+
+
+def entries_by_last_12_weeks():
+    # Calculate the date range for the last 12 weeks
+    today = date.today()
+    start_date = today - timedelta(weeks=11)  # Start from 11 weeks ago
+    end_date = today + timedelta(days=1)  # End today (inclusive)
+
+    entries = DispenseRecord.objects\
+        .filter(created_at__date__range=(start_date, end_date))\
+        .annotate(week=TruncWeek('created_at'))\
+        .values('week')\
+        .annotate(count=Count('id'))\
+        .order_by('week')
+
+    weekly_counts = [0] * 12
+
+    for entry in entries:
+        week_start = entry['week']
+        week_end = week_start + timedelta(weeks=1) - timedelta(days=1)
+        count = entry['count']
+
+        # Find the index of the week within the last 12 weeks range
+        index = (week_start.date() - start_date).days // 7
+        weekly_counts[index] = count
+
+    return weekly_counts

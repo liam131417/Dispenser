@@ -17,6 +17,8 @@ from sensors.views import motionNotDetected
 from sensors.views import isDispensing
 from sensors.views import isNotDispensing
 from sensors.views import getSeed
+from sensors.views import seed_data
+from sensors.views import entries_by_last_12_weeks,entries_by_month
 
 
 urlpatterns = [
@@ -37,5 +39,7 @@ urlpatterns = [
     path("disp/temp/<id>",incrementTemp,name='incrementTemp'),
     path('disp//<int:id>/isDispensing',isDispensing,name='isDispensing'),
     path('disp/<int:id>/isNotDispensing',isNotDispensing,name='isNotDispensing'),
-    path('seed/',getSeed,name='s')
-    ]
+    path('seed/',seed_data,name='s'),
+
+    
+       ]
