@@ -1,0 +1,43 @@
+
+    
+  {% extends 'base.html' %}
+
+  {% block content %}
+    <h1 style="text-align: center;">Setup Page</h1>
+
+    <form method="post">
+      {% csrf_token %}
+      <div style=" display:flex; justify-content: center; align-items: center; flex-direction: column;">
+          <!-- New fields -->
+          <h3 style="text-align: center;">Dispenser A</h3>
+          <div>
+            <label for="{{ form.medicineA.id_for_label }}">Medicine A:</label>
+            {{ form.medicineA }}
+            <label for="{{ form.quantityA.id_for_label }}">Quantity:</label>
+            {{ form.quantityA }}
+          </div>
+          <h3 style="text-align: center;">Dispenser B</h3>
+          <div>
+            <label for="{{ form.medicineB.id_for_label }}">Medicine B:</label>
+            {{ form.medicineB }}
+            <label for="{{ form.quantityB.id_for_label }}">Quantity:</label>
+            {{ form.quantityB }}
+          </div>
+          <h3 style="text-align: center;">Dispenser C</h3>
+          <div>
+            <label for="{{ form.medicineC.id_for_label }}">Medicine C:</label>
+            {{ form.medicineC }}
+            <label for="{{ form.quantityC.id_for_label }}">Quantity:</label>
+            {{ form.quantityC }}
+          </div>
+
+          <!-- Existing buttons -->
+          <button class="btn btn-primary custom-button" style="margin: 20px 10px; padding: 10px 20px;" type="submit" name="Set" value="Set">Set</button>
+      </div>  
+    </form>
+
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+
+  {% endblock %}

@@ -4,7 +4,7 @@ from django.contrib.auth import login
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from .forms import DispenseForm
+from .forms import DispenseForm, ConfigForm
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
@@ -20,6 +20,10 @@ from sensors.views import isDispensing
 from medicine.views import check_medicine, recommend, get_medicine
 from medicine.models import MedicineDetail
 from django.contrib import messages
+
+mA = ''
+mB = ''
+mC = ''
 
 def home(request):
     return render(request, 'home/frontpage.html')
@@ -350,3 +354,67 @@ def dispense_message(request):
 @login_required
 def success(request):
     return render(request, 'home/success.html')
+
+@login_required
+def config(request):
+    if request.method == 'POST':
+        form = ConfigForm(request.POST)
+        if form.is_valid():
+            medicineA = str(form.cleaned_data['medicineA'])
+            medicineB = str(form.cleaned_data['medicineB'])
+            medicineC = str(form.cleaned_data['medicineC'])
+            quantityA = form.cleaned_data['quantityA']
+            quantityB = form.cleaned_data['quantityB']
+            quantityC = form.cleaned_data['quantityC']
+            print(quantityA, quantityB, quantityC)
+            
+            # Check if the inputs are the same
+            if medicineA == medicineB or medicineA == medicineC or medicineB == medicineC:
+                message = "The inputs cannot be the same. Please try again."
+                return render(request, 'home/config.html', {'message': message, 'form': form})
+            
+            # Check if the inputs are valid medicine name
+            try:
+                mdA = MedicineDetail.objects.get(pk=medicineA.lower())
+            except MedicineDetail.DoesNotExist:
+                message = "Medicine A is not exists."
+                return render(request, 'home/config.html', {'message': message, 'form': form})
+            try:
+                mdB = MedicineDetail.objects.get(pk=medicineB.lower())
+            except MedicineDetail.DoesNotExist:
+                message = "Medicine B is not exists."
+                return render(request, 'home/config.html', {'message': message, 'form': form})
+            try:
+                mdC = MedicineDetail.objects.get(pk=medicineC.lower())
+            except MedicineDetail.DoesNotExist:
+                message = "Medicine C is not exists."
+                return render(request, 'home/config.html', {'message': message, 'form': form})
+            
+            # If correct inputs given
+            mA = medicineA
+            mB = medicineB
+            mC = medicineC
+
+            # Store the form data in session
+            request.session['medicineA'] = medicineA
+            request.session['medicineB'] = medicineB
+            request.session['medicineC'] = medicineC
+            request.session['quantityA'] = quantityA
+            request.session['quantityB'] = quantityB
+            request.session['quantityC'] = quantityC
+
+            form = DispenseForm()
+            return render(request, 'home/dispense.html', {'form': form})
+
+    else:
+        initial_values = {
+            'medicineA': request.session.get('medicineA', ''),
+            'medicineB': request.session.get('medicineB', ''),
+            'medicineC': request.session.get('medicineC', ''),
+            'quantityA': request.session.get('quantityA', ''),
+            'quantityB': request.session.get('quantityB', ''),
+            'quantityC': request.session.get('quantityC', ''),
+        }
+        form = ConfigForm(initial=initial_values)
+
+    return render(request, 'home/config.html', {'form': form})
