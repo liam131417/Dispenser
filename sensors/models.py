@@ -30,7 +30,17 @@ class MedicalDispensor(models.Model):
     medicine = models.CharField(max_length=100,null=True)
     ultraId = models.IntegerField(default=1000)
     tempId = models.IntegerField(default=1000)
+    quantity = models.IntegerField(default= 0)
     created_at = models.DateTimeField(default=timezone.now)
+    class Meta:
+        app_label = 'sensors'
+
+class DispenseRecord(models.Model):
+    created_at = models.DateTimeField(default=timezone.now,primary_key=True)
+    dispId = models.IntegerField(default=1)
+    medicine = models.CharField(max_length=100)
+    quantity = models.IntegerField(default=0)
+
     class Meta:
         app_label = 'sensors'
 

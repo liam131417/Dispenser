@@ -11,6 +11,8 @@ from django.utils import timezone
 from datetime import timedelta
 import random
 
+
+
 @csrf_exempt
 def add_tempAndHumid(request):
     if request.method == 'POST':
@@ -150,6 +152,7 @@ def get_temphumid(request, id):
     except HumiditySensor.DoesNotExist:
         return JsonResponse({'error':"ID does not exist"})
 
+
 def get_distance(request, id):
     try:
         distance = UltrasonicSensor.objects.get(pk=id)
@@ -252,7 +255,7 @@ def motion(request):
         return JsonResponse(data,safe=False)
     else:
         return JsonResponse({'error':"Error"})
-    
+
 def temphumid(request):
     if request.method == 'GET':
         temphumid = HumiditySensor.objects.all()
