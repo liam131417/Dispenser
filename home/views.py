@@ -126,14 +126,13 @@ def dispense(request):
     if len(obj1.medicine) == 0:
         setup_message = 'Dispenser A is not setup'
         messages.add_message(request, messages.WARNING, setup_message)
-        return render(request, 'home/dispense.html', {'form': form})
     if len(obj2.medicine) == 0:
         setup_message = 'Dispenser B is not setup'
         messages.add_message(request, messages.WARNING, setup_message)
-        return render(request, 'home/dispense.html', {'form': form})
     if len(obj3.medicine) == 0:
         setup_message = 'Dispenser C is not setup'
         messages.add_message(request, messages.WARNING, setup_message)
+    if len(setup_message) > 0:
         return render(request, 'home/dispense.html', {'form': form})
     
     context = {
@@ -148,212 +147,91 @@ def dispense(request):
     if request.method == 'POST':
         form = DispenseForm(request.POST)
         button_clicked = request.POST.get('button')
-        # Handle button click logic here
-        if button_clicked == 'dispenserA':
-            obj = MedicalDispensor.objects.get(pk=1)
-            med_name = obj.medicine
-            md = MedicineDetail.objects.get(pk=med_name)
-            current_obj = {'name': md.name, 'condition': md.condition, 'alcohol': md.alcohol, 'pregnant': md.pregnant, 'rating': md.rating, 'rx_otc': md.rx_otc, 'side_effects': md.side_effects}
-            
-            if form.is_valid(): 
-                preg_input = form.cleaned_data['pregnancy']
-                alcohol_input = form.cleaned_data['alcohol']
-                recommendation = form.cleaned_data['recommendation']
-                quanty = form.cleaned_data['quantity']
-                isDispensing(request, 1)
-                createdAt = timezone.now()
-                medicine = med_name
-                dispId = 1
-                quantity = quanty
-                DispenseRecord.objects.create(created_at=createdAt,dispId = dispId, medicine=medicine,quantity = quantity)
+        if form.is_valid(): 
+            preg_input = form.cleaned_data['pregnancy']
+            alcohol_input = form.cleaned_data['alcohol']
+            recommendation = form.cleaned_data['recommendation']
+            quanty = form.cleaned_data['quantity']
 
-                preg = 'Y' if preg_input else 'N'
-                alcohol = 'Y' if alcohol_input else 'N'
-                
-                condition = current_obj['condition']
-                message, return_obj = check_medicine(request, med_name, condition, preg, alcohol)
-                # Check alcohol
-                alcohol_msg = 'Positive. This medicine is safe for alcoholic person. '
-                if alcohol == 'Y' and return_obj['alcohol'] == 'D':
-                    alcohol_msg = 'Negative. This medicine is unsafe for alcoholic person. '
-                # Check pregnancy
-                preg_msg = 'Positive. This medicine is safe for pregnant woman. '
-                if preg == 'Y' and return_obj['pregnant'] in {'C', 'D', 'X', 'N'}:
-                    preg_msg = 'Negative. This medicine is unsafe for pregnant woman. '
-                # Side effect
-                side_effects_msg = return_obj['side_effects']
-                # OTC
-                rx_otc = return_obj['rx_otc']
-                rx_otc_msg = 'Prescription needed for this medicine'
-                if 'otc' in rx_otc:
-                    rx_otc_msg = 'Available over the counter'
+            preg = 'Y' if preg_input else 'N'
+            alcohol = 'Y' if alcohol_input else 'N'
 
-                messages.success(request, 'Drug name: ' + med_name)
-                messages.success(request, 'Medical Condition: ' + condition)
-                if alcohol_input:
-                    messages.success(request, 'Alcohol: ' + alcohol_msg)
-                if preg_input:
-                    messages.success(request, 'Pregnancy: ' + preg_msg)
-                messages.success(request, 'Side effects: ' + side_effects_msg)
-                messages.success(request, 'Rx/OTC: ' + rx_otc_msg)
-
-                if recommendation:
-                    return_objs = recommend(condition, alcohol, preg)
-                    for medicine in return_objs:
-                        messages.success(request, ' ')
-                        current_obj = medicine
-                        condition = current_obj['condition']
-                        med_name = current_obj['name']
-                        message, return_obj = check_medicine(request, med_name, condition, preg, alcohol)
+            # Handle button click logic here
+            if button_clicked == 'dispenserA':
+                obj = MedicalDispensor.objects.get(pk=1)
+                med_name = obj.medicine
+                md = MedicineDetail.objects.get(pk=med_name)
+                current_obj = {'name': md.name, 'condition': md.condition, 'alcohol': md.alcohol, 'pregnant': md.pregnant, 'rating': md.rating, 'rx_otc': md.rx_otc, 'side_effects': md.side_effects}
                         
-                        side_effects_msg = return_obj['side_effects']
-                        rx_otc = return_obj['rx_otc']
-                        rx_otc_msg = 'Prescription needed for this medicine'
-                        if 'otc' in rx_otc:
-                            rx_otc_msg = 'Available over the counter'
+            elif button_clicked == "dispenserB":
+                obj = MedicalDispensor.objects.get(pk=2)
+                med_name = obj.medicine
+                md = MedicineDetail.objects.get(pk=med_name)
+                current_obj = {'name': md.name, 'condition': md.condition, 'alcohol': md.alcohol, 'pregnant': md.pregnant, 'rating': md.rating, 'rx_otc': md.rx_otc, 'side_effects': md.side_effects}
 
-                        messages.success(request, 'Drug name: ' + med_name)
-                        messages.success(request, 'Medical Condition: ' + condition)
-                        messages.success(request, 'Side effects: ' + side_effects_msg)
-                        messages.success(request, 'Rx/OTC: ' + rx_otc_msg)
-                        
-        elif button_clicked == "dispenserB":
-            obj = MedicalDispensor.objects.get(pk=2)
-            med_name = obj.medicine
-            md = MedicineDetail.objects.get(pk=med_name)
-            current_obj = {'name': md.name, 'condition': md.condition, 'alcohol': md.alcohol, 'pregnant': md.pregnant, 'rating': md.rating, 'rx_otc': md.rx_otc, 'side_effects': md.side_effects}
-            
-            if form.is_valid(): 
-                preg_input = form.cleaned_data['pregnancy']
-                alcohol_input = form.cleaned_data['alcohol']
-                recommendation = form.cleaned_data['recommendation']
-                quanty = form.cleaned_data['quantity']
+            else:
+                obj = MedicalDispensor.objects.get(pk=3)
+                med_name = obj.medicine
+                md = MedicineDetail.objects.get(pk=med_name)
+                current_obj = {'name': md.name, 'condition': md.condition, 'alcohol': md.alcohol, 'pregnant': md.pregnant, 'rating': md.rating, 'rx_otc': md.rx_otc, 'side_effects': md.side_effects}
 
-                isDispensing(request, 1)
-                createdAt = timezone.now()
-                medicine = med_name
-                dispId = 2
-                quantity = quanty
-                DispenseRecord.objects.create(created_at=createdAt,dispId = dispId, medicine=medicine,quantity = quantity)
+            isDispensing(request, 1)
+            createdAt = timezone.now()
+            medicine = med_name
+            dispId = 1
+            quantity = quanty
+            DispenseRecord.objects.create(created_at=createdAt,dispId = dispId, medicine=medicine,quantity = quantity)
+            messages.success(request, 'Dispense Successfully !')
+            messages.success(request, ' ')
 
-                preg = 'Y' if preg_input else 'N'
-                alcohol = 'Y' if alcohol_input else 'N'
-                
-                condition = current_obj['condition']
-                message, return_obj = check_medicine(request, med_name, condition, preg, alcohol)
-                # Check alcohol
-                alcohol_msg = 'Positive. This medicine is safe for alcoholic person. '
-                if alcohol == 'Y' and return_obj['alcohol'] == 'D':
-                    alcohol_msg = 'Negative. This medicine is unsafe for alcoholic person. '
-                # Check pregnancy
-                preg_msg = 'Positive. This medicine is safe for pregnant woman. '
-                if preg == 'Y' and return_obj['pregnant'] in {'C', 'D', 'X', 'N'}:
-                    preg_msg = 'Negative. This medicine is unsafe for pregnant woman. '
-                # Side effect
-                side_effects_msg = return_obj['side_effects']
-                # OTC
-                rx_otc = return_obj['rx_otc']
-                rx_otc_msg = 'Prescription needed for this medicine'
-                if 'otc' in rx_otc:
-                    rx_otc_msg = 'Available over the counter'
+            condition = current_obj['condition']
+            message, return_obj = check_medicine(request, med_name, condition, preg, alcohol)
+            # Check alcohol
+            alcohol_msg = 'Positive. This medicine is safe for alcoholic person. '
+            if alcohol == 'Y' and return_obj['alcohol'] == 'D':
+                alcohol_msg = 'Negative. This medicine is unsafe for alcoholic person. '
+            # Check pregnancy
+            preg_msg = 'Positive. This medicine is safe for pregnant woman. '
+            if preg == 'Y' and return_obj['pregnant'] in {'C', 'D', 'X', 'N'}:
+                preg_msg = 'Negative. This medicine is unsafe for pregnant woman. '
+            # Side effect
+            side_effects_msg = return_obj['side_effects']
+            # OTC
+            rx_otc = return_obj['rx_otc']
+            rx_otc_msg = 'Prescription needed for this medicine'
+            if 'otc' in rx_otc:
+                rx_otc_msg = 'Available over the counter'
 
-                messages.success(request, 'Drug name: ' + med_name)
-                messages.success(request, 'Medical Condition: ' + condition)
-                if alcohol_input:
-                    messages.success(request, 'Alcohol: ' + alcohol_msg)
-                if preg_input:
-                    messages.success(request, 'Pregnancy: ' + preg_msg)
-                messages.success(request, 'Side effects: ' + side_effects_msg)
-                messages.success(request, 'Rx/OTC: ' + rx_otc_msg)
+            messages.success(request, 'Drug name: ' + med_name)
+            messages.success(request, 'Medical Condition: ' + condition)
+            if alcohol_input:
+                messages.success(request, 'Alcohol: ' + alcohol_msg)
+            if preg_input:
+                messages.success(request, 'Pregnancy: ' + preg_msg)
+            messages.success(request, 'Side effects: ' + side_effects_msg)
+            messages.success(request, 'Rx/OTC: ' + rx_otc_msg)
 
-                if recommendation:
-                    return_objs = recommend(condition, alcohol, preg)
-                    for medicine in return_objs:
-                        messages.success(request, ' ')
-                        current_obj = medicine
-                        condition = current_obj['condition']
-                        med_name = current_obj['name']
-                        message, return_obj = check_medicine(request, med_name, condition, preg, alcohol)
-                        
-                        side_effects_msg = return_obj['side_effects']
-                        rx_otc = return_obj['rx_otc']
-                        rx_otc_msg = 'Prescription needed for this medicine'
-                        if 'otc' in rx_otc:
-                            rx_otc_msg = 'Available over the counter'
+            if recommendation:
+                return_objs = recommend(condition, alcohol, preg)
+                for medicine in return_objs:
+                    messages.success(request, ' ')
+                    current_obj = medicine
+                    condition = current_obj['condition']
+                    med_name = current_obj['name']
+                    message, return_obj = check_medicine(request, med_name, condition, preg, alcohol)
+                    
+                    side_effects_msg = return_obj['side_effects']
+                    rx_otc = return_obj['rx_otc']
+                    rx_otc_msg = 'Prescription needed for this medicine'
+                    if 'otc' in rx_otc:
+                        rx_otc_msg = 'Available over the counter'
 
-                        messages.success(request, 'Drug name: ' + med_name)
-                        messages.success(request, 'Medical Condition: ' + condition)
-                        messages.success(request, 'Side effects: ' + side_effects_msg)
-                        messages.success(request, 'Rx/OTC: ' + rx_otc_msg)
-
-        elif button_clicked == "dispenserC":
-            obj = MedicalDispensor.objects.get(pk=3)
-            med_name = obj.medicine
-            md = MedicineDetail.objects.get(pk=med_name)
-            current_obj = {'name': md.name, 'condition': md.condition, 'alcohol': md.alcohol, 'pregnant': md.pregnant, 'rating': md.rating, 'rx_otc': md.rx_otc, 'side_effects': md.side_effects}
-            
-            if form.is_valid(): 
-                preg_input = form.cleaned_data['pregnancy']
-                alcohol_input = form.cleaned_data['alcohol']
-                recommendation = form.cleaned_data['recommendation']
-                isDispensing(request, 1)
-                createdAt = timezone.now()
-                medicine = med_name
-                dispId = 3
-                quantity = quanty
-                DispenseRecord.objects.create(created_at=createdAt,dispId = dispId, medicine=medicine,quantity = quantity)
-
-                preg = 'Y' if preg_input else 'N'
-                alcohol = 'Y' if alcohol_input else 'N'
-                
-                condition = current_obj['condition']
-                message, return_obj = check_medicine(request, med_name, condition, preg, alcohol)
-                # Check alcohol
-                alcohol_msg = 'Positive. This medicine is safe for alcoholic person. '
-                if alcohol == 'Y' and return_obj['alcohol'] == 'D':
-                    alcohol_msg = 'Negative. This medicine is unsafe for alcoholic person. '
-                # Check pregnancy
-                preg_msg = 'Positive. This medicine is safe for pregnant woman. '
-                if preg == 'Y' and return_obj['pregnant'] in {'C', 'D', 'X', 'N'}:
-                    preg_msg = 'Negative. This medicine is unsafe for pregnant woman. '
-                # Side effect
-                side_effects_msg = return_obj['side_effects']
-                # OTC
-                rx_otc = return_obj['rx_otc']
-                rx_otc_msg = 'Prescription needed for this medicine'
-                if 'otc' in rx_otc:
-                    rx_otc_msg = 'Available over the counter'
-
-                messages.success(request, 'Drug name: ' + med_name)
-                messages.success(request, 'Medical Condition: ' + condition)
-                if alcohol_input:
-                    messages.success(request, 'Alcohol: ' + alcohol_msg)
-                if preg_input:
-                    messages.success(request, 'Pregnancy: ' + preg_msg)
-                messages.success(request, 'Side effects: ' + side_effects_msg)
-                messages.success(request, 'Rx/OTC: ' + rx_otc_msg)
-
-                if recommendation:
-                    return_objs = recommend(condition, alcohol, preg)
-                    for medicine in return_objs:
-                        messages.success(request, ' ')
-                        current_obj = medicine
-                        condition = current_obj['condition']
-                        med_name = current_obj['name']
-                        message, return_obj = check_medicine(request, med_name, condition, preg, alcohol)
-                        
-                        side_effects_msg = return_obj['side_effects']
-                        rx_otc = return_obj['rx_otc']
-                        rx_otc_msg = 'Prescription needed for this medicine'
-                        if 'otc' in rx_otc:
-                            rx_otc_msg = 'Available over the counter'
-
-                        messages.success(request, 'Drug name: ' + med_name)
-                        messages.success(request, 'Medical Condition: ' + condition)
-                        messages.success(request, 'Side effects: ' + side_effects_msg)
-                        messages.success(request, 'Rx/OTC: ' + rx_otc_msg)
+                    messages.success(request, 'Drug name: ' + med_name)
+                    messages.success(request, 'Medical Condition: ' + condition)
+                    messages.success(request, 'Side effects: ' + side_effects_msg)
+                    messages.success(request, 'Rx/OTC: ' + rx_otc_msg)
+    
     context['form'] = form
-
     return render(request, 'home/dispense.html', context)
 
 @login_required
@@ -377,28 +255,32 @@ def config(request):
             quantityA = form.cleaned_data['quantityA']
             quantityB = form.cleaned_data['quantityB']
             quantityC = form.cleaned_data['quantityC']
-            print(quantityA, quantityB, quantityC)
             
             # Check if the inputs are the same
             if medicineA == medicineB or medicineA == medicineC or medicineB == medicineC:
-                message = "The inputs cannot be the same. Please try again."
+                message = "The medicine name cannot be the same. Please try again."
+                return render(request, 'home/config.html', {'message': message, 'form': form})
+            
+            # Check if quantity more than 0
+            if quantityA <= 0 or quantityB <= 0 or quantityC <= 0:
+                message = "The quantity must be postive number. Please try again."
                 return render(request, 'home/config.html', {'message': message, 'form': form})
             
             # Check if the inputs are valid medicine name
             try:
                 mdA = MedicineDetail.objects.get(pk=medicineA.lower())
             except MedicineDetail.DoesNotExist:
-                message = "Medicine A is not exists."
+                message = "Medicine A is not exists. Please try again."
                 return render(request, 'home/config.html', {'message': message, 'form': form})
             try:
                 mdB = MedicineDetail.objects.get(pk=medicineB.lower())
             except MedicineDetail.DoesNotExist:
-                message = "Medicine B is not exists."
+                message = "Medicine B is not exists. Please try again."
                 return render(request, 'home/config.html', {'message': message, 'form': form})
             try:
                 mdC = MedicineDetail.objects.get(pk=medicineC.lower())
             except MedicineDetail.DoesNotExist:
-                message = "Medicine C is not exists."
+                message = "Medicine C is not exists. Please try again."
                 return render(request, 'home/config.html', {'message': message, 'form': form})
             
             # If correct inputs given, update the record
@@ -417,25 +299,30 @@ def config(request):
             obj3.quantity = quantityC
             obj3.save()
 
-
-            # Store the form data in session
-            request.session['medicineA'] = medicineA
-            request.session['medicineB'] = medicineB
-            request.session['medicineC'] = medicineC
-            request.session['quantityA'] = quantityA
-            request.session['quantityB'] = quantityB
-            request.session['quantityC'] = quantityC
-
-            message = "Setup successfully"
+            message = "Setup Successfully !"
             return render(request, 'home/config.html', {'message': message, 'form': form})
     else:
+        obj1 = MedicalDispensor.objects.get(pk=1)
+        medicineA = obj1.medicine
+        quantityA = obj1.quantity
+        obj1.save()
+
+        obj2 = MedicalDispensor.objects.get(pk=2)
+        medicineB = obj2.medicine
+        quantityB = obj2.quantity
+        obj2.save()
+
+        obj3 = MedicalDispensor.objects.get(pk=3)
+        medicineC = obj3.medicine
+        quantityC = obj3.quantity
+
         initial_values = {
-            'medicineA': request.session.get('medicineA', ''),
-            'medicineB': request.session.get('medicineB', ''),
-            'medicineC': request.session.get('medicineC', ''),
-            'quantityA': request.session.get('quantityA', ''),
-            'quantityB': request.session.get('quantityB', ''),
-            'quantityC': request.session.get('quantityC', ''),
+            'medicineA': medicineA,
+            'medicineB': medicineB,
+            'medicineC': medicineC,
+            'quantityA': quantityA,
+            'quantityB': quantityB,
+            'quantityC': quantityC
         }
         form = ConfigForm(initial=initial_values)
 

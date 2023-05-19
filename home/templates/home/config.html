@@ -4,6 +4,9 @@
 
   {% block content %}
     <h1 style="text-align: center;">Setup Page</h1>
+    {% if message %}
+      <p>{{ message }}</p>
+    {% endif %} 
 
     <form method="post">
       {% csrf_token %}
@@ -45,9 +48,5 @@
             var newWindow = window.open('/config/displayMed/', '_blank', 'height=500,width=800');
         }
     </script>
-
-    {% if message %}
-        <p>{{ message }}</p>
-    {% endif %}
 
   {% endblock %}

@@ -21,9 +21,9 @@ def predictTemp(year,month,day):
 
     # Make predictions
     X_new = pd.DataFrame({
-        'YEAR': [2023],
-        'MO': [5],
-        'DY': [10]
+        'YEAR': [year],
+        'MO': [month],
+        'DY': [day]
     })
     y_new = model.predict(X_new)
     return y_new
