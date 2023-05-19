@@ -152,6 +152,9 @@ def dispense(request):
             alcohol_input = form.cleaned_data['alcohol']
             recommendation = form.cleaned_data['recommendation']
             quanty = form.cleaned_data['quantity']
+            if quanty <= 0:
+                messages.add_message(request, messages.WARNING, "The quantity must be postive number. Please try again.")
+                return render(request, 'home/dispense.html', {'form': form})
 
             preg = 'Y' if preg_input else 'N'
             alcohol = 'Y' if alcohol_input else 'N'
